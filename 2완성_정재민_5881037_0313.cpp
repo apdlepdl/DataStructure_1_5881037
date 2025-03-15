@@ -1,26 +1,27 @@
-#include <iostream>
+#include <stdio.h>
+#include <string.h>
 
-using namespace std;
-
-void floatToIEEE754(float number) {
-    unsigned int binary = *(reinterpret_cast<unsigned int*>(&number));
-
-    unsigned int sign = (binary >> 31) & 1; // 부호 (1비트)
-    unsigned int exponent = (binary >> 23) & 0xFF;  // 지수 (8비트)
-    unsigned int mantissa = binary & 0x7FFFFF;  // 가수 (23비트)
-
-    cout << "부호 (1비트): " << sign << endl;
-    cout << "지수 (8비트): " << exponent << endl;
-    cout << "가수 (23비트): " << mantissa << endl;
+char changeCase(char ch) {
+    if ('A' <= ch && ch <= 'Z') {
+        return ch + ('a' - 'A');    // 대문자를 소문자로 변환
+    }
+    else if ('a' <= ch && ch <= 'z') {
+        return ch - ('a' - 'A');    // 소문자를 대문자로 변환
+    }
 }
 
 int main() {
-    float input;
+    char input[500];
+    printf("문자열을 입력하세요: ");
+    fgets(input, sizeof(input), stdin);
 
-    cout << "실수를 입력하세요: ";  // 실수 입력
-    cin >> input;
+    printf("문자열의 길이: %lu\n", strlen(input));    // 입력한 문자열 길이 출력
 
-    floatToIEEE754(input);
+    for (int i = 0; input[i] != '\0'; i++) {
+        input[i] = changeCase(input[i]);    // 대소문자 변환
+    }
+
+    printf("변환된 문자열: %s\n", input); // 변환한 문자열 출력
 
     return 0;
 }
