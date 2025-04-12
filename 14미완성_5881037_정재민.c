@@ -86,15 +86,15 @@ void printPolynomial(const Polynomial* p) {
 int main() {
     Polynomial p1, p2, result;
 
-    printf("Ã¹ ¹øÂ° ´ÙÇ×½ÄÀ» ÀÔ·ÂÇÏ¼¼¿ä (¿¹: 3x^2+4x+1):\n");
+    printf("ì²« ë²ˆì§¸ ë‹¤í•­ì‹ì„ ì…ë ¥í•˜ì„¸ìš” (ì˜ˆ: 3x^2+4x+1):\n");
     inputPolynomial(&p1);
 
-    printf("µÎ ¹øÂ° ´ÙÇ×½ÄÀ» ÀÔ·ÂÇÏ¼¼¿ä (¿¹: 2x^2+5x+3):\n");
+    printf("ë‘ ë²ˆì§¸ ë‹¤í•­ì‹ì„ ì…ë ¥í•˜ì„¸ìš” (ì˜ˆ: 2x^2+5x+3):\n");
     inputPolynomial(&p2);
 
     result = multiplyPolynomials(&p1, &p2);
 
-    printf("[°ö¼À °á°ú]\n");
+    printf("[ê³±ì…ˆ ê²°ê³¼]\n");
     printPolynomial(&result);
 
     return 0;
