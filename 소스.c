@@ -1,134 +1,125 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "LinearList.h"
+#include "linearList.h"
 
-listType* polyadd(listType* f, listType* s) {
-	listType* a;
-	int i = 0, j = 0;
-	elementType f_item, s_item;
+listType* createList(int size) {
+	listType* lptr;
 
-	a = createList(f->last + s->last + 2);
+	lptr = (listType*)malloc(sizeof(listType));
+	lptr->array = (elementType*)malloc(sizeof(elementType) * size);
+	lptr->size = size;
+	lptr->last = -1;
+	lptr->move = 0;
 
-	while (i <= f->last && j <= s->last) {
-		f_item = readItem(f, i);
-		s_item = readItem(s, j);
-		if (f_item.expo < s_item.expo) {
-			ordered_insertItem(a, f_item);
-			i++;
-		}
-		else if (f_item.expo == s_item.expo) {
-			ordered_insertItem(a,
-				(elementType) {
-				(f_item.coef + s_item.coef), f_item.expo
-			});
-			i++; j++;
-		}
-		else {
-			ordered_insertItem(a, s_item);
-			j++;
-		}
-	}
-	while (i <= f->last) {
-		ordered_insertItem(a, readItem(f, i));
-		i++;
-	}
-	while (j <= s->last) {
-		ordered_insertItem(a, readItem(s, j));
-		i++;
-	}
-
-	return a;
+	return lptr;
 }
-/* Matrix
-listType* SmTranspose(listType* org) {
-	listType* tr;
-	elementType o_item;
 
-	tr = createList(org->size);
+int destroyList(listType* list) {
+	free(list->array);
+	free(list);
+}
 
-	for (int i = 0; i <= org->last; i++){
-		o_item = readItem(org, i);
-		ordered_insertItem(tr, (elementType) { o_item.col, o_item.row, o_item.val });
+elementType readItem(listType* list, int index) {
+	if (index < 0 || index > list->last) {
+		fprintf(stderr, "Index error %d in readItem\n", index);
+		return NULL_ITEM;
 	}
-	return tr;
+	return list->array[index];
+}
+
+//Polynomial
+int compare_item(elementType item1, elementType item2) {
+	return (item1.expo - item2.expo);
+}
+
+/* Matrix
+int compare_item(elementType item1, elementType item2) {
+	if (item1.row != item2.row) return (item1.row - item2.row);
+	else return (item1.col - item2.col);
 }
 */
 
-main() {
-	//Polynomial
+int ordered_insertItem(listType* list, elementType item) {
+	int i, j;
 
-	listType* poly1, * poly2, * poly3;
+	for (i = 0; i <= list->last; i++) {
+		if (compare_item(list->array[i], item) > 0) break;
+	}
 
-	poly1 = createList(10);
-	ordered_insertItem(poly1, (elementType) { 4, 3 });
-	ordered_insertItem(poly1, (elementType) { 2, 1 });
-	ordered_insertItem(poly1, (elementType) { 1, 0 });
-	printf(" First Polynomial \n");
-	printList(poly1);
+	for (j = list->last + 1; j > i; j--) {
+		list->array[j] = list->array[j - 1];
+		list->move++;
+	}
+	list->array[i] = item;
+	list->last++;
 
-	poly2 = createList(10);
-	ordered_insertItem(poly2, (elementType) { 3, 2 });
-	ordered_insertItem(poly2, (elementType) { 4, 1 });
-	printf(" Second Polynomial \n");
-	printList(poly2);
+	return 1;
 
-	poly3 = polyadd(poly1, poly2);
-	printf("Added Polynomial \n");
-	printList(poly3);
+}
 
-	destroyList(poly1);
-	destroyList(poly2);
-	destroyList(poly3);
+int insertItem(listType* list, int index, elementType item) {
+	if (index < 0 || index >(list->last + 1)) {
+		fprintf(stderr, "Index error %d in readItem\n", index);
+		return -1;
+	}
+	if (index > list->size) {
+		fprintf(stderr, "list is full(%d) in readItem\n", index);
+		return -1;
+	}
 
-	/* Matrix
-	listType* myList, *trans;
+	for (int i = list->last + 1; i > index; i--) {
+		list->array[i] = list->array[i - 1];
+		list->move++;
+	}
+	list->array[index] = item;
+	list->last++;
 
-	myList = createList(20);
+	return 1;
+}
 
-	ordered_insertItem(myList, (elementType) { 0, 2, 2 });
-	ordered_insertItem(myList, (elementType) { 0, 6, 12 });
-	ordered_insertItem(myList, (elementType) { 1, 4, 7 });
-	ordered_insertItem(myList, (elementType) { 2, 0, 23 });
-	ordered_insertItem(myList, (elementType) { 3, 3, 31 });
-	ordered_insertItem(myList, (elementType) { 4, 1, 14 });
-	ordered_insertItem(myList, (elementType) { 4, 5, 26 });
-	ordered_insertItem(myList, (elementType) { 5, 6, 6 });
-	ordered_insertItem(myList, (elementType) { 6, 0, 52 });
-	ordered_insertItem(myList, (elementType) { 7, 4, 11 });
+elementType deleteItem(listType* list, int index) {
+	elementType r = list->array[index];
 
-	printf("Original Matrix\n");
-	printList(myList);
+	if (index < 0 || index > list->last) {
+		fprintf(stderr, "Index error %d in deleteItem\n", index);
+		return NULL_ITEM;
+	}
 
-	trans = SmTranspose(myList);
-	printf("Transpose Matrix\n");
-	printList(trans);
-	*/
+	for (int i = index; i < list->last; i++) {
+		list->array[i] = list->array[i + 1];
+		list->move++;
+	}
+	list->last--;
 
+	return r;
+}
 
-	/*
-	ordered_insertItem(myList, 10);
-	ordered_insertItem(myList, 40);
-	ordered_insertItem(myList, 20);
-	ordered_insertItem(myList, 30);
+// Polynomal
+int printList(listType* list) {
+	printf("List: size = %d, last = %d, move = %d\n\t Items:", list->size, list->last, list->move);
+	for (int i = list->last; i >= 0; i--) {
+		printf("%d", list->array[i].coef);
+		if (list->array[i].expo != 0) printf("X^%d", list->array[i].expo);
+		if (i != 0) printf("+");
+	}
+	printf("\n");
+}
 
+/* Matrix
+int printList(listType* list) {
+	printf("List: size = %d, last = %d, move = %d\n\t Items:", list->size, list->last, list->move);
+	for (int i = 0; i <= list->last; i++) {
+		printf(" [%d]{%d,%d,%d} ", i, list->array[i].row,
+									  list->array[i].col,
+									  list->array[i].val);
+	}
+	printf("\n");
+}
 
-	printList(myList);
+*/
 
-	ordered_insertItem(myList, 5);
-	printList(myList);
-
-	ordered_insertItem(myList, 15);
-	printList(myList);
-
-	ordered_insertItem(myList, 45);
-	printList(myList);
-
-	ordered_insertItem(myList, 100);
-	printList(myList);
-
-	ordered_insertItem(myList, 200);
-	printList(myList);
-	*/
-
+int initList(listType* list) {
+	list->last = -1;
+	list->move = 0;
 }
